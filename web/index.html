@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#242039" />
+    <meta
+      name="description"
+      content="An interactive research workbench for comparing the privacy and utility of synthetic statistical releases."
+    />
+    <title>Magnitude Lab · Release workbench</title>
+    <link rel="icon" href="./assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./assets/style.css" />
+    <script type="module" src="./assets/app.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to workspace</a>
+    <header>
+      <div class="top wrap">
+        <a href="#tab=workbench" class="brand"
+          ><img src="./assets/mark.svg" width="35" height="35" alt="" />Magnitude<span>Lab</span></a
+        >
+        <nav aria-label="Workspace">
+          <a data-nav="workbench" href="#tab=workbench">Workbench</a
+          ><a data-nav="validation" href="#tab=validation">Validation</a
+          ><a data-nav="guide" href="#tab=guide">Field guide</a>
+        </nav>
+        <a
+          class="repo"
+          href="https://github.com/rongsenzhang/magnitude-lab"
+          aria-label="View source on GitHub"
+          ><svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-13-2 16" /></svg
+          ><span>Source</span></a
+        >
+      </div>
+    </header>
+    <main id="main" class="wrap" tabindex="-1">
+      <div id="app" aria-busy="true"><p class="load" role="status">Loading research data…</p></div>
+    </main>
+    <footer class="wrap">
+      <span>Magnitude Lab <span class="mono">v1.0.0</span></span
+      ><span>Independent research demo · Synthetic data</span
+      ><a href="https://github.com/rongsenzhang/magnitude-lab/releases/tag/v1.0.0">Release notes</a>
+    </footer>
+    <div id="notice" role="status" aria-live="polite"></div>
+    <noscript
+      >This workbench needs JavaScript. The research, code and results are also available in the
+      <a href="https://github.com/rongsenzhang/magnitude-lab">public repository</a>.</noscript
+    >
+  </body>
+</html>

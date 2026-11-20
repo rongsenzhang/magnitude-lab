@@ -1,0 +1,15 @@
+{
+  "name": "magnitude-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser verification for the Magnitude Lab statistical release workbench",
+  "scripts": {
+    "test:browser": "node tests/browser.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}
