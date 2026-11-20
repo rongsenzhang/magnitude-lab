@@ -12,6 +12,12 @@
 2. [Check the same question across 32 held-out populations](https://rongsenzhang.github.io/magnitude-lab/#tab=validation&dataset=turnover&level=region&metric=sum&method=combined). Only 64 of 128 neighbouring-region comparisons remain available. Of those, 62 retain their original ordering. Accuracy on the surviving comparisons and the cost of losing half the comparisons answer different questions.
 3. [Inspect the integration examples](https://rongsenzhang.github.io/magnitude-lab/#tab=guide). Read four historical counts retrieved from Cantabular's public Irish census endpoint. Switch the release profile to see exactly what a downstream client receives for a synthetic magnitude table. These examples use independent sources and show their provenance.
 
+## Ask the research assistant
+
+Open the assistant from the bottom corner of the workbench. Start with the combined regional turnover case and select South East. Ask “Why is this region withheld?” Then ask “Does the contributor count also breach the threshold?” Follow up in English or Chinese. The chat carries recent turns and the current selection, and links to its evidence.
+
+The optional OpenAI backend uses the Responses API. It builds its own evidence from the same versioned experiment as the browser and limits public requests through a persistent daily allowance. No visitor key or account is needed. If the backend is unconfigured, the page explicitly shows six browsable evidence topics instead. [Assistant architecture, activation and limits](docs/assistant.md)
+
 ## Research and delivery evidence
 
 | Reviewer question | Evidence |
@@ -34,15 +40,17 @@ python3 -m http.server 8000 --directory web --bind 127.0.0.1
 
 Open [the local workbench](http://127.0.0.1:8000/). To regenerate the committed results, run `python3 research/generate.py` followed by `python3 -m integration.reviewer_bundle`. The [integration guide](docs/integration.md) includes the optional live query and the client request schema.
 
-For browser tests, use Node.js 20 or newer and npm. The runner starts its own local server at the Pages project subpath.
+For browser and assistant tests, use Node.js 24 and npm. The runner starts its own local server at the Pages project subpath.
 
 ```sh
 npm ci
 npx playwright install --with-deps chromium webkit
 npm run test:browser
+npm run test:ai
+npm run test:assistant-browser
 ```
 
-On `main`, GitHub Actions checks the generated outputs, runs the Python and browser suites and deploys the tested `web/` directory. The public site runs without a login, API key or application server.
+On `main`, GitHub Actions checks the generated outputs, runs the Python and browser suites and deploys the tested `web/` directory. The statistical workbench runs entirely in the browser. Live questions use the separately deployed Worker and its server-side key.
 
 ## Interpretation
 

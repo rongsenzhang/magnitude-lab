@@ -19,7 +19,7 @@ A public work sample for a research scientist delivering a statistical disclosur
 
 Python generator → synthetic contributor records in memory → policy + aggregation engine → versioned JSON benchmark → browser workbench / CSV exports. The same artifact can serve a downstream analytical client. Static deployment keeps the demo reproducible without accounts, secrets or service fees. Production integration would require protected infrastructure, approved datasets and disclosure review. No production privacy guarantee follows from these public simulations.
 
-Separate the research fixture (which intentionally includes truth) from any public release integration. The data owner must govern query permissions, repeated and overlapping requests, reference values, secret material, and audit controls in its own environment. The comparison concerns statistical outputs. An AI response channel could consume an approved subset in a later pilot, after release policy and permissions are agreed.
+Separate the research fixture (which intentionally includes truth) from any public release integration. The data owner must govern query permissions, repeated and overlapping requests, reference values, secret material, and audit controls in its own environment. The comparison concerns statistical outputs. A production AI response channel could consume an approved subset after release policy and permissions are agreed. The applicant subsequently requested live multi-turn AI in 1.0. The [assistant](assistant.md) operates in the public synthetic analyst workspace and explains its published results. The separate release-only adapter demonstrates the narrower downstream interface.
 
 ## Release checks
 

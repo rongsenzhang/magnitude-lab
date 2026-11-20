@@ -1,0 +1,19 @@
+name = "magnitude-lab-assistant"
+main = "index.mjs"
+compatibility_date = "2026-01-01"
+workers_dev = true
+preview_urls = false
+
+[vars]
+ALLOWED_ORIGIN = "https://rongsenzhang.github.io"
+OPENAI_MODEL = "gpt-4.1-mini-2025-04-14"
+DAILY_REQUEST_LIMIT = "24"
+BURST_REQUEST_LIMIT = "4"
+
+[[durable_objects.bindings]]
+name = "QUOTA"
+class_name = "Quota"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Quota"]

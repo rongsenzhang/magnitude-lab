@@ -2,14 +2,18 @@
   "name": "magnitude-lab",
   "version": "1.0.0",
   "private": true,
-  "description": "Browser verification for the Magnitude Lab statistical release workbench",
+  "description": "Statistical release experiments, browser checks and an evidence-grounded research assistant",
   "scripts": {
-    "test:browser": "node tests/browser.cjs"
+    "test:browser": "node tests/browser.cjs",
+    "test:ai": "node --test tests/evidence.mjs tests/worker.test.mjs",
+    "test:assistant-browser": "node tests/assistant-browser.cjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "devDependencies": {
-    "playwright": "1.62.1"
-  }
+    "playwright": "1.62.1",
+    "wrangler": "4.166.0"
+  },
+  "type": "module"
 }
