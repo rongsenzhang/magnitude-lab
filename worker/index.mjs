@@ -146,7 +146,7 @@ function sourceURL(card) {
   throw new Error("Evidence card has no citeable source.");
 }
 
-function groundResult(content, cards) {
+function groundResult(content, cards, context) {
   const parsed = JSON.parse(content);
   const ids = parsed?.citation_ids;
   if (!onlyFields(parsed, ["answer", "citation_ids"]) || !nonemptyText(parsed.answer, answerLimit) ||
@@ -158,10 +158,25 @@ function groundResult(content, cards) {
   const allowedNumbers = new Set(cited.flatMap((card) =>
     numericClaims([card.summary, ...card.facts].join(" "))));
   const answer = parsed.answer.trim();
-  if (/https?:\/\/|www\./i.test(answer) || numericClaims(answer).some((number) => !allowedNumbers.has(number))) {
+  // The digits in the selected area's exact code identify a place, not a quantity.
+  // Keep every other numeric literal subject to the cited evidence check.
+  const quantitativeText = answer.replace(/\b[RD]\d+\b/gi, (code) => {
+    if (code !== context.cell) throw new Error("Unexpected area identifier.");
+    return " ";
+  });
+  if (/https?:\/\/|www\./i.test(answer) || numericClaims(quantitativeText).some((number) => !allowedNumbers.has(number))) {
     throw new Error("Unsupported quantitative claim or URL.");
   }
-  return { answer, citations: cited.map((card) => ({ id: card.id, label: card.title, url: sourceURL(card) })) };
+  const citations = cited.map((card) => ({ id: card.id, label: card.title, url: sourceURL(card) }));
+  const publishedViews = new Set();
+  for (const card of cited) {
+    const view = card.sources.find((source) => source.url.startsWith("https://rongsenzhang.github.io/magnitude-lab/#"));
+    if (view && !publishedViews.has(view.url)) {
+      citations.push({ id: card.id + "-view", label: view.label, url: view.url });
+      publishedViews.add(view.url);
+    }
+  }
+  return { answer, citations };
 }
 
 async function answerQuestion(env, fetchModel, request, selected) {
@@ -210,7 +225,7 @@ async function answerQuestion(env, fetchModel, request, selected) {
     }
     const texts = messages.filter((part) => part?.type === "output_text");
     if (result.status !== "completed" || texts.length !== 1) throw new Error("Incomplete result.");
-    return groundResult(texts[0].text, cards);
+    return groundResult(texts[0].text, cards, selected.context);
   } catch (error) {
     if (error instanceof RequestError && error.code === "model_refusal") throw error;
     throw new RequestError(502, "ungrounded_answer", "The live answer could not be verified against the selected evidence.");

@@ -68,6 +68,10 @@ test("follow-up uses server-owned evidence, bounded multi-turn context and serve
   assert.equal(first.citations[0].id, "cell");
   assert.match(first.citations[0].url, /^https:\/\/github\.com\/rongsenzhang\/magnitude-lab\//);
 
+  const citedView = new URL(first.citations.find((item) => item.id === "cell-view").url);
+  assert.equal(citedView.origin, "https://rongsenzhang.github.io");
+  assert.equal(new URLSearchParams(citedView.hash.slice(1)).get("cell"), context.cell);
+
   const history = [
     { role: "user", content: "What happened here?" },
     { role: "assistant", content: first.answer },
@@ -185,5 +189,23 @@ test("unknown references, unsupported quantities, extra links, refusals and inco
     assert.ok(payload.error && payload.code);
     assert.ok(!("answer" in payload));
     assert.ok(!JSON.stringify(payload).includes("private upstream details"));
+  }
+});
+
+test("only the current complete area code is treated as an identifier", async () => {
+  const env = environment({ BURST_REQUEST_LIMIT: "20" });
+  const cases = [
+    ["South East (R04) exceeds the threshold with 70.63%.", 200],
+    ["地区R04的占比为70.63%。", 200],
+    ["South East R04 has 04 contributors.", 502],
+    ["South East R04 has 04% concentration.", 502],
+    ["South East R04suffix has 70.63% concentration.", 502],
+    ["South East (R03) has 70.63% concentration.", 502],
+    ["South East (R37) has 70.63% concentration.", 502],
+  ];
+  for (const [answer, status] of cases) {
+    const response = await handleRequest(question(), env,
+      async () => modelResponse({ answer, citation_ids: ["cell"] }));
+    assert.equal(response.status, status, answer);
   }
 });

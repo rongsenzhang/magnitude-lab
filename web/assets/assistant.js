@@ -54,6 +54,29 @@ function links(sources) {
   return group;
 }
 
+function evidenceContent(card) {
+  const list = element('ul', 'assistant-facts');
+  for (const fact of card.facts) list.append(element('li', '', fact));
+  return [element('h3', '', card.title), element('p', '', card.summary), list, links(card.sources)];
+}
+
+async function serviceError(response) {
+  const body = await response.json().catch(() => null);
+  if (body?.code === 'ungrounded_answer') return 'The live answer could not be verified against this view’s evidence.';
+  if (body?.code === 'model_unavailable') return 'The OpenAI service is temporarily unavailable.';
+  const messages = {
+    400: 'Check your question and current view, then try again.',
+    403: 'This site is not authorised to use the live assistant.',
+    413: 'Shorten your question and try again.',
+    422: 'The available evidence did not support an answer. Try a more specific question about this view.',
+    429: 'The public demo has reached its usage limit. Please try again later.',
+    502: 'The live answer is unavailable.',
+    503: 'The live assistant is temporarily unavailable.',
+    504: 'The assistant timed out. Please try again.'
+  };
+  return messages[response.status] || 'The assistant is unavailable. Please try again.';
+}
+
 function chatUrl(raw) {
   if (typeof raw !== 'string' || !raw.trim()) return null;
   try {
@@ -168,6 +191,13 @@ async function mount() {
   const suggestions = element('div', 'assistant-suggestions');
   suggestions.setAttribute('role', 'group');
   const preview = element('div', 'assistant-evidence');
+  const recorded = element('section', 'assistant-evidence');
+  recorded.setAttribute('aria-label', 'Recorded workbench evidence');
+  recorded.hidden = true;
+  function clearRecorded() {
+    recorded.hidden = true;
+    recorded.replaceChildren();
+  }
   panel.append(launcher, windowEl);
   windowEl.append(header, contextLabel, body, indication);
 
@@ -187,9 +217,7 @@ async function mount() {
     contextLabel.textContent = 'Current view · ' + viewText;
     if (live) return;
     const card = evidenceFor(intent, { lab, ...context });
-    const list = element('ul', 'assistant-facts');
-    for (const fact of card.facts) list.append(element('li', '', fact));
-    preview.replaceChildren(element('h3', '', card.title), element('p', '', card.summary), list, links(card.sources));
+    preview.replaceChildren(...evidenceContent(card));
     for (const choice of suggestions.querySelectorAll('button')) choice.setAttribute('aria-pressed', String(choice.dataset.intent === intent));
   }
 
@@ -213,13 +241,14 @@ async function mount() {
       });
       suggestions.append(choice);
     }
-    body.append(suggestions, transcript);
+    body.append(suggestions, transcript, recorded);
     windowEl.append(form, note);
     question.addEventListener('input', syncControls);
     clear.addEventListener('click', () => {
       session.length = 0;
       save(session);
       transcript.replaceChildren();
+      clearRecorded();
       question.value = '';
       indication.textContent = 'Conversation cleared.';
       syncControls();
@@ -270,6 +299,7 @@ async function mount() {
     if (!live || busy || !message || message.length > questionLimit) return;
     const { context, viewText } = current();
     busy = true;
+    clearRecorded();
     indication.textContent = 'Researching your question…';
     syncControls();
     pending = new AbortController();
@@ -280,15 +310,7 @@ async function mount() {
         headers: { 'Content-Type': 'application/json' }, signal: pending.signal,
         body: JSON.stringify({ question: message, history: pastMessages(session), context })
       });
-      if (!response.ok) {
-        const messages = { 400: 'Check your question and current view, then try again.',
-          403: 'This site is not authorised to use the live assistant.', 413: 'Shorten your question and try again.',
-          422: 'The available evidence did not support an answer. Try a more specific question about this view.',
-          429: 'The public demo has reached its usage limit. Please try again later.',
-          502: 'The assistant could not produce an answer from the evidence. Please try again.',
-          503: 'The live assistant is temporarily unavailable.', 504: 'The assistant timed out. Please try again.' };
-        throw new Error(messages[response.status] || 'The assistant is unavailable. Please try again.');
-      }
+      if (!response.ok) throw new Error(await serviceError(response));
       const result = await response.json().catch(() => null);
       if (typeof result?.answer !== 'string' || !result.answer.trim() || !Array.isArray(result.citations)) {
         throw new Error('The service returned an incomplete answer. Please try again.');
@@ -306,6 +328,11 @@ async function mount() {
       if (error.name === 'AbortError') indication.textContent = 'The assistant timed out. Your question is ready to retry.';
       else if (error instanceof TypeError) indication.textContent = 'Could not reach the live assistant. Your question is ready to retry.';
       else indication.textContent = error.message;
+      const card = evidenceFor('cell', { lab, ...context });
+      recorded.replaceChildren(element('strong', '', 'Recorded workbench evidence'),
+        element('p', 'assistant-stamp', viewText), ...evidenceContent(card));
+      recorded.hidden = false;
+      body.scrollTop += recorded.getBoundingClientRect().top - body.getBoundingClientRect().top;
     } finally {
       clearTimeout(timeout);
       pending = null;

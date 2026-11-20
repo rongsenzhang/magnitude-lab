@@ -54,11 +54,11 @@ async function preview(page, base) {
 
 async function liveContract(page, base) {
   const payloads = [];
-  let failure = false;
+  let failure = null;
   await page.route('**/test-api/chat', async route => {
     assert.equal(route.request().method(), 'POST');
     payloads.push(route.request().postDataJSON());
-    if (failure) return route.fulfill({ status: 429, json: { code: 'limit', error: 'Try later' } });
+    if (failure) return route.fulfill({ status: failure.status, json: { code: failure.code, error: 'Test error' } });
     await route.fulfill({ json: { answer: trialAnswer + ' <script>example</script>',
       citations: [source, { id: 'bad', label: 'Untrusted link', url: 'javascript:alert(1)' }] } });
   });
@@ -95,13 +95,35 @@ async function liveContract(page, base) {
   await page.reload();
   await page.getByRole('button', { name: 'Ask the research assistant' }).click();
   assert.equal(await dialog.locator('.assistant-turn').count(), 2);
-  failure = true;
+  failure = { status: 429, code: 'quota_exhausted' };
   await composer.fill('Compare the methods.');
   await send.click();
   await dialog.getByRole('status').filter({ hasText: 'usage limit' }).waitFor();
   assert.equal(await composer.inputValue(), 'Compare the methods.');
   assert.equal(await dialog.locator('.assistant-turn').count(), 2);
   assert.ok(await send.isEnabled());
+  const recorded = dialog.getByRole('region', { name: 'Recorded workbench evidence' });
+  await recorded.getByRole('heading', { name: 'Screening North East' }).waitFor();
+  for (const [code, message] of [
+    ['ungrounded_answer', 'could not be verified'],
+    ['model_unavailable', 'OpenAI service is temporarily unavailable']
+  ]) {
+    failure = { status: 502, code };
+    const callsBefore = payloads.length;
+    await send.click();
+    await dialog.getByRole('status').filter({ hasText: message }).waitFor();
+    assert.equal(await composer.inputValue(), 'Compare the methods.');
+    assert.equal(await dialog.locator('.assistant-turn').count(), 2);
+    assert.equal(payloads.length, callsBefore + 1);
+    assert.equal(payloads.at(-1).history.length, 4);
+    assert.match(await recorded.innerText(), /North East \(R02\)/);
+    assert.equal(await recorded.getByRole('link', { name: 'Method definitions and results' }).getAttribute('href'), source.url);
+  }
+  failure = null;
+  await send.click();
+  await dialog.locator('.assistant-turn').nth(2).waitFor();
+  assert.ok(await recorded.isHidden());
+  assert.equal(payloads.at(-1).history.length, 4);
   await dialog.getByRole('button', { name: 'Clear chat' }).click();
   assert.equal(await dialog.locator('.assistant-turn').count(), 0);
   assert.equal(await page.evaluate(() => sessionStorage.getItem('magnitude-lab:assistant:1')), null);

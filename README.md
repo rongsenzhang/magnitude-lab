@@ -16,7 +16,7 @@
 
 Open the assistant from the bottom corner of the workbench. Start with the combined regional turnover case and select South East. Ask “Why is this region withheld?” Then ask “Does the contributor count also breach the threshold?” Follow up in English or Chinese. The chat carries recent turns and the current selection, and links to its evidence.
 
-The optional OpenAI backend uses the Responses API. It builds its own evidence from the same versioned experiment as the browser and limits public requests through a persistent daily allowance. No visitor key or account is needed. If the backend is unconfigured, the page explicitly shows six browsable evidence topics instead. [Assistant architecture, activation and limits](docs/assistant.md)
+The hosted assistant uses the OpenAI Responses API. It builds its own evidence from the same versioned experiment as the browser and limits public requests through a persistent daily allowance. No visitor key or account is needed. If the backend is unconfigured, the page explicitly shows six browsable evidence topics instead. [Assistant architecture, activation and limits](docs/assistant.md) · [Recorded two-turn browser check](docs/assistant-workbench.png)
 
 ## Research and delivery evidence
 

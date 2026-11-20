@@ -30,3 +30,16 @@ npx --no-install wrangler deploy --dry-run --config worker/wrangler.toml
 ```
 
 The tests cover the entire evidence matrix, missing denominators, changed selections, output validation, provider refusals, quota persistence and concurrent requests. Browser tests cover citation links, two turns, session clearing and the clearly labelled local evidence view. Routine automation substitutes the model transport, so pull requests can exercise these behaviours without incurring model charges. [Evidence tests](../tests/evidence.mjs) · [Worker tests](../tests/worker.test.mjs) · [browser tests](../tests/assistant-browser.cjs)
+
+An optional production smoke test opens the public workbench in a fresh desktop browser, asks a question about the selected region and follows up in Chinese. It compares the numbers with the underlying synthetic cell and verifies that both answers appear with source links. It requires explicit opt-in and uses two real model requests.
+
+```sh
+node tests/live-assistant.cjs --live
+```
+
+
+## Observed release check · 20 November 2026
+
+The public page sent an English question for the South East, combined-policy turnover view to the live Worker. Its answer identified the largest contributor’s 70.63% share and the 50% threshold. The follow-up asked in Chinese whether the count alone would trigger withholding. The assistant answered in Chinese that 37 businesses exceeded the minimum count of eight. Both calls returned HTTP 200, visible source links and the selected experiment. The test compared the cited numbers with the committed research data. During pre-release checks another live request returned HTTP 502. The interface handles provider and grounding failures separately and offers the underlying evidence without creating a successful conversation turn.
+
+[Two-turn screenshot from the deployed site](assistant-workbench.png) · [Opt-in live test](../tests/live-assistant.cjs)
