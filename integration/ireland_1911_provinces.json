@@ -1,0 +1,20 @@
+{
+  "data": {
+    "dataset": {
+      "table": {
+        "dimensions": [
+          {
+            "categories": [
+              {"code": "01", "label": "Ulster"},
+              {"code": "03", "label": "Leinster"},
+              {"code": "02", "label": "Munster"},
+              {"code": "04", "label": "Connacht"}
+            ],
+            "variable": {"name": "province"}
+          }
+        ],
+        "values": [1578270, 1163123, 1032430, 609138]
+      }
+    }
+  }
+}

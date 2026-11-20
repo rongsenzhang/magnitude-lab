@@ -1,0 +1,129 @@
+{
+  "snapshotDate": "2026-11-20",
+  "counts": [
+    {
+      "code": "01",
+      "label": "Ulster",
+      "count": 1578270
+    },
+    {
+      "code": "03",
+      "label": "Leinster",
+      "count": 1163123
+    },
+    {
+      "code": "02",
+      "label": "Munster",
+      "count": 1032430
+    },
+    {
+      "code": "04",
+      "label": "Connacht",
+      "count": 609138
+    }
+  ],
+  "releaseExamples": {
+    "earnings": {
+      "version": "1.0.0",
+      "synthetic": true,
+      "dataset": "Household earnings",
+      "geography": "district",
+      "measure": "mean",
+      "unit": "GBP",
+      "policy": "combined",
+      "rows": [
+        {
+          "area": "Mossbank",
+          "estimate": null,
+          "status": "withheld"
+        },
+        {
+          "area": "Alder Vale",
+          "estimate": 40348.21138888889,
+          "status": "released"
+        },
+        {
+          "area": "Rowan Point",
+          "estimate": 44192.0892,
+          "status": "released"
+        },
+        {
+          "area": "East Fen",
+          "estimate": 41229.73,
+          "status": "released"
+        },
+        {
+          "area": "Birch Quay",
+          "estimate": 40801.094,
+          "status": "released"
+        },
+        {
+          "area": "Willow End",
+          "estimate": 42449.6704,
+          "status": "released"
+        },
+        {
+          "area": "Fern Hill",
+          "estimate": 45913.28064516129,
+          "status": "released"
+        },
+        {
+          "area": "Reed Vale",
+          "estimate": 43808.97066666667,
+          "status": "released"
+        },
+        {
+          "area": "South Beck",
+          "estimate": null,
+          "status": "withheld"
+        },
+        {
+          "area": "Oak Strand",
+          "estimate": 42799.100454545456,
+          "status": "released"
+        },
+        {
+          "area": "Hazel Port",
+          "estimate": 48032.965142857145,
+          "status": "released"
+        },
+        {
+          "area": "Ash Field",
+          "estimate": 43070.73428571429,
+          "status": "released"
+        }
+      ]
+    },
+    "turnover": {
+      "version": "1.0.0",
+      "synthetic": true,
+      "dataset": "Business turnover",
+      "geography": "region",
+      "measure": "sum",
+      "unit": "GBP",
+      "policy": "combined",
+      "rows": [
+        {
+          "area": "North West",
+          "estimate": 12870358.69,
+          "status": "released"
+        },
+        {
+          "area": "North East",
+          "estimate": 16398318.83,
+          "status": "released"
+        },
+        {
+          "area": "South West",
+          "estimate": 4716791.18,
+          "status": "released"
+        },
+        {
+          "area": "South East",
+          "estimate": null,
+          "status": "withheld"
+        }
+      ]
+    }
+  }
+}
